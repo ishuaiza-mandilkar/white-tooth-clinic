@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1a7a6b">
+<title>White Tooth</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="White Tooth">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-title">
+    <h1 id="clinicTitle">White Tooth</h1>
+    <span class="tagline">Skin &middot; Hair &middot; Dental</span>
+  </div>
+  <div id="todayDate" class="today-date"></div>
+</header>
+
+<div class="location-bar" id="locationBar">
+  <button class="loc-chip active" data-location="All">All Locations</button>
+  <button class="loc-chip" data-location="Kurla">Kurla</button>
+  <button class="loc-chip" data-location="Sion">Sion</button>
+  <button class="loc-chip" data-location="Nagpada">Nagpada</button>
+</div>
+
+<main id="app">
+
+  <!-- TODAY TAB -->
+  <section id="tab-today" class="tab-panel active">
+    <div class="section-block">
+      <h2 id="dueTodayHeading">Due Today</h2>
+      <div id="dueTodayList" class="card-list"></div>
+    </div>
+    <div class="section-block">
+      <h2 id="dueTomorrowHeading">Due Tomorrow</h2>
+      <div id="dueTomorrowList" class="card-list"></div>
+    </div>
+    <div class="section-block">
+      <h2 id="dueWeekHeading">Due This Week</h2>
+      <div id="dueWeekList" class="card-list"></div>
+    </div>
+  </section>
+
+  <!-- ADD TAB -->
+  <section id="tab-add" class="tab-panel">
+    <h2>New Entry</h2>
+    <div class="form-card">
+    <form id="entryForm">
+      <label>Location
+        <select id="f_location" required>
+          <option value="" disabled selected>Select location</option>
+          <option value="Kurla">Kurla</option>
+          <option value="Sion">Sion</option>
+          <option value="Nagpada">Nagpada</option>
+        </select>
+      </label>
+
+      <label>Patient Name
+        <input type="text" id="f_name" required autocomplete="off">
+      </label>
+      <div id="matchSuggestions" class="suggestions"></div>
+
+      <label>Phone Number
+        <input type="tel" id="f_phone" required autocomplete="off" placeholder="10-digit mobile">
+      </label>
+
+      <label>Treatment
+        <select id="f_treatment">
+          <option value="Skin">Skin</option>
+          <option value="Hair">Hair</option>
+          <option value="Dental">Dental</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label>Visit Date
+        <input type="date" id="f_visitDate" required>
+      </label>
+
+      <label>Fee (₹)
+        <input type="number" id="f_fee" min="0" step="1" inputmode="numeric" required>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="f_paid" checked>
+        <span>Fully Paid</span>
+      </label>
+
+      <label>Next Visit Date <span class="optional">(optional)</span>
+        <input type="date" id="f_nextVisit">
+      </label>
+
+      <label>Notes <span class="optional">(optional)</span>
+        <textarea id="f_notes" rows="2" placeholder="e.g. cavity filling, patch test done"></textarea>
+      </label>
+    </form>
+    </div>
+    <div class="save-bar">
+      <button type="submit" form="entryForm" class="btn-primary">Save Entry</button>
+    </div>
+  </section>
+
+  <!-- PATIENTS TAB -->
+  <section id="tab-patients" class="tab-panel">
+    <h2>Patients</h2>
+    <input type="search" id="patientSearch" placeholder="Search by name or phone" class="search-box">
+    <div id="patientList" class="card-list"></div>
+  </section>
+
+  <!-- REPORTS TAB -->
+  <section id="tab-reports" class="tab-panel">
+    <h2>Reports</h2>
+    <div class="month-nav">
+      <button id="prevMonth" class="btn-icon">&#8249;</button>
+      <span id="reportMonthLabel"></span>
+      <button id="nextMonth" class="btn-icon">&#8250;</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon">&#128176;</div>
+        <div class="stat-value" id="statRevenue">₹0</div>
+        <div class="stat-label">Collected</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">&#9203;</div>
+        <div class="stat-value" id="statDue">₹0</div>
+        <div class="stat-label">Due</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">&#128197;</div>
+        <div class="stat-value" id="statVisits">0</div>
+        <div class="stat-label">Visits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">&#128100;</div>
+        <div class="stat-value" id="statPatients">0</div>
+        <div class="stat-label">Patients</div>
+      </div>
+    </div>
+    <div class="section-block" id="locationBreakdownBlock">
+      <h2>By Location</h2>
+      <div id="locationBreakdown" class="card-list"></div>
+    </div>
+    <div class="section-block">
+      <h2>By Treatment</h2>
+      <div id="treatmentBreakdown" class="card-list"></div>
+    </div>
+    <div class="section-block">
+      <div class="trust-card">
+        <div class="trust-title">&#128274; Your Data, Your Control</div>
+        <ul class="trust-list">
+          <li>Stored only on this phone — not on any server, not visible to anyone else.</li>
+          <li>No login, no password, no account. It's always fully yours.</li>
+          <li>You can back it up or move it to a new phone anytime, below.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="section-block">
+      <h2>Backup</h2>
+      <p class="backup-note">All records are saved only on this phone. Back up now and then so nothing is lost if the phone is lost, broken, or reset.</p>
+      <button id="exportBtn" class="btn-secondary">&#128229; Backup My Data</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+      <button id="importBtn" class="btn-secondary">&#128228; Restore on a New Phone</button>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <button class="tab-btn active" data-tab="today">
+    <span class="tab-icon">&#128197;</span><span>Reminders</span>
+  </button>
+  <button class="tab-btn" data-tab="add">
+    <span class="tab-icon">&#10133;</span><span>Add</span>
+  </button>
+  <button class="tab-btn" data-tab="patients">
+    <span class="tab-icon">&#128100;</span><span>Patients</span>
+  </button>
+  <button class="tab-btn" data-tab="reports">
+    <span class="tab-icon">&#128202;</span><span>Reports</span>
+  </button>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<!-- Patient history modal -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <button id="closeModal" class="modal-close">&times;</button>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

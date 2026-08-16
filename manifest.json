@@ -1,0 +1,15 @@
+{
+  "name": "White Tooth",
+  "short_name": "White Tooth",
+  "description": "Patient appointments, fees, and follow-up reminders for White Tooth clinic — replaces the paper diary.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f5",
+  "theme_color": "#1a7a6b",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
