@@ -160,6 +160,16 @@ body{
   border-top:1px solid var(--border);
   padding-top:14px;
 }
+.pin-lock{z-index:110;}
+.pin-input{
+  width:100%;
+  text-align:center;
+  font-size:1.5rem;
+  letter-spacing:8px;
+  font-weight:700;
+}
+.pin-error{color:var(--danger);font-size:0.82rem;margin-top:8px;text-align:center;}
+#pinForgotBtn{margin-top:10px;}
 
 #app{
   flex:1 1 auto;

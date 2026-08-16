@@ -613,6 +613,92 @@ document.getElementById('importFile').addEventListener('change', (ev) => {
   ev.target.value = '';
 });
 
+/* ---------- PIN lock ---------- */
+const PIN_KEY = 'clinicPin';
+const PIN_UNLOCK_DATE_KEY = 'clinicPinUnlockedDate';
+
+function pinLockNeeded() {
+  const pin = localStorage.getItem(PIN_KEY);
+  if (!pin) return 'setup';
+  if (localStorage.getItem(PIN_UNLOCK_DATE_KEY) !== todayStr()) return 'enter';
+  return null;
+}
+
+function showPinScreen(mode) {
+  const screen = document.getElementById('pinLockScreen');
+  const confirmInput = document.getElementById('pinConfirmInput');
+  const forgotBtn = document.getElementById('pinForgotBtn');
+  document.getElementById('pinError').style.display = 'none';
+  document.getElementById('pinInput').value = '';
+  confirmInput.value = '';
+
+  if (mode === 'setup') {
+    document.getElementById('pinTitle').textContent = 'Set Up a PIN';
+    document.getElementById('pinSubtitle').textContent = 'Choose a 4–6 digit PIN to keep this app private to you.';
+    confirmInput.style.display = 'block';
+    forgotBtn.style.display = 'none';
+  } else {
+    document.getElementById('pinTitle').textContent = 'Enter PIN';
+    document.getElementById('pinSubtitle').textContent = 'Enter your PIN to open White Tooth.';
+    confirmInput.style.display = 'none';
+    forgotBtn.style.display = 'block';
+  }
+  screen.dataset.mode = mode;
+  screen.style.display = 'flex';
+}
+function hidePinScreen() {
+  document.getElementById('pinLockScreen').style.display = 'none';
+}
+function initPinLock() {
+  const mode = pinLockNeeded();
+  if (mode) showPinScreen(mode);
+}
+
+document.querySelectorAll('.pin-input').forEach(el => {
+  el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+});
+
+document.getElementById('pinForm').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const mode = document.getElementById('pinLockScreen').dataset.mode;
+  const pinInput = document.getElementById('pinInput').value.trim();
+  const error = document.getElementById('pinError');
+
+  if (mode === 'setup') {
+    const confirmInput = document.getElementById('pinConfirmInput').value.trim();
+    if (pinInput.length < 4) {
+      error.textContent = 'PIN must be at least 4 digits.';
+      error.style.display = 'block';
+      return;
+    }
+    if (pinInput !== confirmInput) {
+      error.textContent = 'PINs do not match.';
+      error.style.display = 'block';
+      return;
+    }
+    localStorage.setItem(PIN_KEY, pinInput);
+    localStorage.setItem(PIN_UNLOCK_DATE_KEY, todayStr());
+    hidePinScreen();
+    showToast('PIN set');
+  } else {
+    if (pinInput !== localStorage.getItem(PIN_KEY)) {
+      error.textContent = 'Incorrect PIN, try again.';
+      error.style.display = 'block';
+      document.getElementById('pinInput').value = '';
+      return;
+    }
+    localStorage.setItem(PIN_UNLOCK_DATE_KEY, todayStr());
+    hidePinScreen();
+  }
+});
+
+document.getElementById('pinForgotBtn').addEventListener('click', () => {
+  if (!confirm('Reset your PIN? Your patient data is completely safe either way — this only clears the PIN so you can set a new one.')) return;
+  localStorage.removeItem(PIN_KEY);
+  localStorage.removeItem(PIN_UNLOCK_DATE_KEY);
+  showPinScreen('setup');
+});
+
 /* ---------- Subscription status ---------- */
 const SUB_CACHE_KEY = 'clinicSubscriptionCache';
 const SUB_BANNER_DISMISS_KEY = 'clinicSubBannerDismissedDate';
@@ -700,6 +786,7 @@ document.getElementById('todayDate').textContent = new Date().toLocaleDateString
 });
 
 /* ---------- Init ---------- */
+initPinLock();
 switchTab('today');
 document.querySelectorAll('.loc-chip').forEach(c => {
   c.classList.toggle('active', c.getAttribute('data-location') === currentLocationFilter);
