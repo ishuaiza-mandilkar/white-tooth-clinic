@@ -34,6 +34,7 @@
 
   <!-- TODAY TAB -->
   <section id="tab-today" class="tab-panel active">
+    <button id="remindAllBtn" class="btn-secondary" style="margin-top:0;">&#128238; Remind All Due (Today + Tomorrow)</button>
     <div class="section-block">
       <h2 id="dueTodayHeading">Due Today</h2>
       <div id="dueTodayList" class="card-list"></div>
@@ -195,6 +196,14 @@
   <div class="modal-content">
     <button id="closeModal" class="modal-close">&times;</button>
     <div id="historyContent"></div>
+  </div>
+</div>
+
+<!-- Remind-all queue modal -->
+<div id="remindQueueModal" class="modal">
+  <div class="modal-content">
+    <button id="closeRemindQueue" class="modal-close">&times;</button>
+    <div id="remindQueueContent"></div>
   </div>
 </div>
 

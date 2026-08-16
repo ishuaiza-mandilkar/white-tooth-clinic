@@ -120,7 +120,68 @@ function renderToday() {
   document.getElementById('dueTodayHeading').textContent = `Due Today${dueToday.length ? ` (${dueToday.length})` : ''}`;
   document.getElementById('dueTomorrowHeading').textContent = `Due Tomorrow${dueTomorrow.length ? ` (${dueTomorrow.length})` : ''}`;
   document.getElementById('dueWeekHeading').textContent = `Due This Week${dueWeek.length ? ` (${dueWeek.length})` : ''}`;
+
+  remindQueueSource = dueToday.concat(dueTomorrow);
+  document.getElementById('remindAllBtn').textContent =
+    `📨 Remind All Due (${remindQueueSource.length})`;
+  document.getElementById('remindAllBtn').disabled = remindQueueSource.length === 0;
 }
+
+/* ---------- Remind-all queue ---------- */
+let remindQueueSource = [];
+let remindQueue = [];
+let remindQueueIndex = 0;
+
+document.getElementById('remindAllBtn').addEventListener('click', () => {
+  if (remindQueueSource.length === 0) return;
+  remindQueue = remindQueueSource.slice();
+  remindQueueIndex = 0;
+  document.getElementById('remindQueueModal').classList.add('show');
+  renderRemindQueueStep();
+});
+
+function renderRemindQueueStep() {
+  const content = document.getElementById('remindQueueContent');
+  if (remindQueueIndex >= remindQueue.length) {
+    content.innerHTML = `
+      <h2 style="margin-top:0;">All done &#127881;</h2>
+      <p class="card-sub">Reminded ${remindQueue.length} patient${remindQueue.length === 1 ? '' : 's'}.</p>
+      <button class="btn-primary" id="remindQueueClose" style="width:100%;">Close</button>
+    `;
+    document.getElementById('remindQueueClose').addEventListener('click', closeRemindQueueModal);
+    return;
+  }
+  const e = remindQueue[remindQueueIndex];
+  const msg = `Hi ${e.name}, this is a reminder from the clinic for your upcoming ${e.treatment.toLowerCase()} follow-up visit. Please let us know a convenient time. Thank you!`;
+  content.innerHTML = `
+    <div class="card-sub" style="margin-bottom:4px;">Reminder ${remindQueueIndex + 1} of ${remindQueue.length}</div>
+    <h2 style="margin-top:0;margin-bottom:6px;">${escapeHtml(e.name)}</h2>
+    <div class="card-sub" style="margin-bottom:14px;">
+      <span class="badge ${treatmentBadgeClass(e.treatment)}">${e.treatment}</span>
+      <span class="badge badge-location">&#128205; ${e.location}</span>
+    </div>
+    ${e.notes ? `<div class="card-note" style="margin-bottom:14px;">&#128221; ${escapeHtml(e.notes)}</div>` : ''}
+    <button class="btn-primary" id="remindQueueSend" style="width:100%;background:var(--whatsapp);">&#128172; Send WhatsApp Reminder</button>
+    <button class="btn-secondary" id="remindQueueSkip">Skip</button>
+  `;
+  document.getElementById('remindQueueSend').addEventListener('click', () => {
+    window.open(waLink(e.phone, msg), '_blank');
+    remindQueueIndex++;
+    renderRemindQueueStep();
+  });
+  document.getElementById('remindQueueSkip').addEventListener('click', () => {
+    remindQueueIndex++;
+    renderRemindQueueStep();
+  });
+}
+
+function closeRemindQueueModal() {
+  document.getElementById('remindQueueModal').classList.remove('show');
+}
+document.getElementById('closeRemindQueue').addEventListener('click', closeRemindQueueModal);
+document.getElementById('remindQueueModal').addEventListener('click', (ev) => {
+  if (ev.target.id === 'remindQueueModal') closeRemindQueueModal();
+});
 
 function renderDueList(containerId, list, variant) {
   const container = document.getElementById(containerId);
