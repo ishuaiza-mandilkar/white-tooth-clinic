@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinic-diary-v9';
+const CACHE_NAME = 'clinic-diary-v10';
 const ASSETS = [
   './',
   './index.html',

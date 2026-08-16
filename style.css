@@ -145,6 +145,7 @@ h2{font-size:1.05rem;margin:22px 0 12px;color:var(--text);font-weight:700;letter
 .card-info{flex:1;min-width:0;}
 .card-name{font-weight:700;font-size:1rem;letter-spacing:-0.1px;}
 .card-sub{font-size:0.82rem;color:var(--text-muted);margin-top:4px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;row-gap:5px;}
+.card-note{font-size:0.8rem;color:var(--text);margin-top:6px;background:var(--primary-light);padding:6px 9px;border-radius:8px;line-height:1.35;}
 .badge{
   display:inline-block;
   font-size:0.71rem;
@@ -162,7 +163,7 @@ h2{font-size:1.05rem;margin:22px 0 12px;color:var(--text);font-weight:700;letter
 .badge-location{background:var(--primary-light);color:var(--primary-dark);font-weight:700;}
 
 .card-actions{display:flex;gap:8px;flex-shrink:0;}
-.wa-btn,.call-btn{
+.wa-btn,.call-btn,.followup-btn{
   border:none;
   border-radius:50%;
   width:40px;height:40px;
@@ -175,7 +176,8 @@ h2{font-size:1.05rem;margin:22px 0 12px;color:var(--text);font-weight:700;letter
 }
 .wa-btn{background:var(--whatsapp);box-shadow:0 3px 8px -1px rgba(37,211,102,0.5);}
 .call-btn{background:var(--primary);box-shadow:0 3px 8px -1px rgba(26,122,107,0.5);}
-.wa-btn:active,.call-btn:active{transform:scale(0.9);}
+.followup-btn{background:var(--warn);box-shadow:0 3px 8px -1px rgba(201,138,28,0.5);}
+.wa-btn:active,.call-btn:active,.followup-btn:active{transform:scale(0.9);}
 .empty-state{
   text-align:center;
   color:var(--text-muted);

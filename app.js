@@ -150,6 +150,7 @@ function renderDueList(containerId, list, variant) {
           <span class="badge badge-location">&#128205; ${e.location}</span>
           ${dateLabel}
         </div>
+        ${e.notes ? `<div class="card-note">&#128221; ${escapeHtml(e.notes)}</div>` : ''}
       </div>
       <div class="card-actions">
         <a class="call-btn" href="${telLink(e.phone)}" title="Call patient">&#128222;</a>
@@ -239,11 +240,15 @@ function prefillAddForm(entry) {
   nameInput.value = entry.name;
   phoneInput.value = entry.phone;
   document.getElementById('f_treatment').value = entry.treatment;
+  document.getElementById('f_location').value = entry.location || currentLocationFilter;
   document.getElementById('f_visitDate').value = todayStr();
   document.getElementById('f_fee').value = '';
   document.getElementById('f_paid').checked = true;
   document.getElementById('f_nextVisit').value = '';
   document.getElementById('f_notes').value = '';
+  suggestionsBox.innerHTML = '';
+  switchTab('add');
+  showToast(`Adding follow-up for ${entry.name}`);
 }
 
 /* ---------- Patients tab ---------- */
@@ -275,10 +280,15 @@ function renderPatients(filterText) {
         </div>
       </div>
       <div class="card-actions">
+        <button class="followup-btn" title="Add follow-up visit">&#128203;</button>
         <a class="call-btn" href="${telLink(e.phone)}" title="Call patient">&#128222;</a>
         <button class="wa-btn" title="Message on WhatsApp">&#128172;</button>
       </div>
     `;
+    card.querySelector('.followup-btn').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      prefillAddForm(e);
+    });
     card.querySelector('.call-btn').addEventListener('click', (ev) => ev.stopPropagation());
     card.querySelector('.wa-btn').addEventListener('click', (ev) => {
       ev.stopPropagation();
@@ -312,6 +322,7 @@ function openHistory(key) {
         <div class="card-sub">${escapeHtml(patient.phone)}</div>
       </div>
       <div class="card-actions">
+        <button class="followup-btn" title="Add follow-up visit">&#128203;</button>
         <a class="call-btn" href="${telLink(patient.phone)}" title="Call patient">&#128222;</a>
         <a class="wa-btn" href="${waLink(patient.phone, `Hi ${patient.name}, this is the clinic.`)}" target="_blank" title="Message on WhatsApp">&#128172;</a>
       </div>
@@ -338,6 +349,11 @@ function openHistory(key) {
   });
 
   content.innerHTML = html;
+
+  content.querySelector('.followup-btn').addEventListener('click', () => {
+    closeHistoryModal();
+    prefillAddForm(patient);
+  });
 
   content.querySelectorAll('[data-toggle-paid]').forEach(btn => {
     btn.addEventListener('click', () => {
