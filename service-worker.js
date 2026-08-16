@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinic-diary-v11';
+const CACHE_NAME = 'clinic-diary-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -26,6 +26,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  if (event.request.url.includes('subscription.json')) return; // always hit network fresh, never cache
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;

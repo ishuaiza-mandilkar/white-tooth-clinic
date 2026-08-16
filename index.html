@@ -30,6 +30,12 @@
   <button class="loc-chip" data-location="Nagpada">Nagpada</button>
 </div>
 
+<div id="subBanner" class="sub-banner" style="display:none;">
+  <span id="subBannerText"></span>
+  <a id="subBannerLink" class="sub-banner-link" target="_blank" rel="noopener">Pay Now</a>
+  <button id="subBannerDismiss" class="sub-banner-dismiss" aria-label="Dismiss">&times;</button>
+</div>
+
 <main id="app">
 
   <!-- TODAY TAB -->
@@ -204,6 +210,17 @@
   <div class="modal-content">
     <button id="closeRemindQueue" class="modal-close">&times;</button>
     <div id="remindQueueContent"></div>
+  </div>
+</div>
+
+<!-- Subscription renewal lock screen -->
+<div id="subLockScreen" class="sub-lock" style="display:none;">
+  <div class="sub-lock-card">
+    <div class="sub-lock-icon">&#128274;</div>
+    <h2>Subscription Renewal Needed</h2>
+    <p id="subLockText" class="sub-lock-text"></p>
+    <a id="subLockPayLink" class="btn-primary sub-lock-pay" target="_blank" rel="noopener">Pay Now</a>
+    <p class="sub-lock-note">Your patient records are safe and untouched — everything reappears the moment payment is confirmed.</p>
   </div>
 </div>
 

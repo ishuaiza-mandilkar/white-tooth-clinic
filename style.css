@@ -98,6 +98,69 @@ body{
 }
 .loc-chip:active{transform:scale(0.96);}
 
+.sub-banner{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  background:#fff4de;
+  border-bottom:1px solid #f0dcae;
+  font-size:0.82rem;
+  color:#7a5a12;
+}
+.sub-banner span{flex:1;}
+.sub-banner-link{
+  background:var(--warn);
+  color:#fff;
+  font-weight:700;
+  padding:6px 12px;
+  border-radius:16px;
+  text-decoration:none;
+  font-size:0.78rem;
+  white-space:nowrap;
+}
+.sub-banner-dismiss{
+  background:none;
+  border:none;
+  color:#7a5a12;
+  font-size:1.2rem;
+  cursor:pointer;
+  padding:0 2px;
+  line-height:1;
+}
+
+.sub-lock{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:linear-gradient(160deg, var(--primary-dark), var(--primary));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.sub-lock-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  padding:32px 24px;
+  text-align:center;
+  max-width:380px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);
+}
+.sub-lock-icon{font-size:2.4rem;margin-bottom:10px;}
+.sub-lock-card h2{margin:0 0 10px;font-size:1.15rem;}
+.sub-lock-text{color:var(--text-muted);font-size:0.9rem;line-height:1.5;margin-bottom:20px;}
+.sub-lock-pay{display:block;text-decoration:none;margin-top:0;}
+.sub-lock-note{
+  font-size:0.78rem;
+  color:var(--text-muted);
+  margin:18px 0 0;
+  line-height:1.5;
+  border-top:1px solid var(--border);
+  padding-top:14px;
+}
+
 #app{
   flex:1 1 auto;
   overflow-y:auto;

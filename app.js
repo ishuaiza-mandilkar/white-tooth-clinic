@@ -35,6 +35,13 @@ function formatDisplayDate(dateStr) {
 function monthLabel(year, month) {
   return new Date(year, month, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
+function daysBetween(fromStr, toStr) {
+  const [fy, fm, fd] = fromStr.split('-').map(Number);
+  const [ty, tm, td] = toStr.split('-').map(Number);
+  const from = new Date(fy, fm - 1, fd);
+  const to = new Date(ty, tm - 1, td);
+  return Math.round((to - from) / 86400000);
+}
 
 /* ---------- Phone helpers ---------- */
 function cleanPhone(phone) {
@@ -606,6 +613,70 @@ document.getElementById('importFile').addEventListener('change', (ev) => {
   ev.target.value = '';
 });
 
+/* ---------- Subscription status ---------- */
+const SUB_CACHE_KEY = 'clinicSubscriptionCache';
+const SUB_BANNER_DISMISS_KEY = 'clinicSubBannerDismissedDate';
+
+async function checkSubscription() {
+  let sub = null;
+  try {
+    const resp = await fetch('subscription.json', { cache: 'no-store' });
+    if (resp.ok) {
+      sub = await resp.json();
+      localStorage.setItem(SUB_CACHE_KEY, JSON.stringify(sub));
+    }
+  } catch (err) { /* offline — fall back to cached status below */ }
+
+  if (!sub) {
+    const cached = localStorage.getItem(SUB_CACHE_KEY);
+    if (cached) {
+      try { sub = JSON.parse(cached); } catch (err) { sub = null; }
+    }
+  }
+  if (!sub) return; // never checked before and currently offline — fail open, don't lock her out
+
+  const today = todayStr();
+  const daysLeft = daysBetween(today, sub.paidUntil);
+  const expired = sub.status !== 'active' || daysLeft < 0;
+
+  if (expired) {
+    showSubLock(sub);
+  } else {
+    hideSubLock();
+    if (daysLeft <= 5) {
+      maybeShowSubBanner(sub, daysLeft);
+    } else {
+      hideSubBanner();
+    }
+  }
+}
+
+function showSubLock(sub) {
+  document.getElementById('subLockText').textContent =
+    `Her monthly subscription (${sub.price || ''}) is due. The app is paused until payment is confirmed.`;
+  document.getElementById('subLockPayLink').href = sub.paymentLink || '#';
+  document.getElementById('subLockScreen').style.display = 'flex';
+}
+function hideSubLock() {
+  document.getElementById('subLockScreen').style.display = 'none';
+}
+
+function maybeShowSubBanner(sub, daysLeft) {
+  const dismissedDate = localStorage.getItem(SUB_BANNER_DISMISS_KEY);
+  if (dismissedDate === todayStr()) return;
+  document.getElementById('subBannerText').textContent =
+    daysLeft === 0 ? 'Subscription renews today' : `Subscription renews in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`;
+  document.getElementById('subBannerLink').href = sub.paymentLink || '#';
+  document.getElementById('subBanner').style.display = 'flex';
+}
+function hideSubBanner() {
+  document.getElementById('subBanner').style.display = 'none';
+}
+document.getElementById('subBannerDismiss').addEventListener('click', () => {
+  localStorage.setItem(SUB_BANNER_DISMISS_KEY, todayStr());
+  hideSubBanner();
+});
+
 /* ---------- Tabs ---------- */
 function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -639,6 +710,7 @@ if (currentLocationFilter !== 'All') {
 renderToday();
 renderPatients();
 renderReports();
+checkSubscription();
 
 /* ---------- Service worker ---------- */
 if ('serviceWorker' in navigator) {
